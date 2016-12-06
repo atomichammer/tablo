@@ -43,7 +43,6 @@
 
 #include <QList>
 #include <QVariant>
-#include "treeitem.h"
 
 class ConfigItem
 {
