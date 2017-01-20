@@ -1,5 +1,5 @@
 #include "maskdelegate.h"
-#include "MyLineEdit.h"
+#include "mylineedit.h"
 #include <QDebug>
 
 

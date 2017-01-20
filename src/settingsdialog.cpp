@@ -15,7 +15,7 @@
 #include "datasender.h"
 #include "port.h"
 #include "qextserialenumerator.h"
-#include "ftwrapper.h"
+//#include "ftwrapper.h"
 #include "actionbutton.h"
 
 
@@ -373,12 +373,13 @@ void SettingsDialog::on_pbForce_clicked()
 
 void SettingsDialog::EnumComm()
 {
+    /*
     FTWrapper wrapper;
     if(wrapper.isSuccessful())
     {
         wrapper.scanPorts();
     }
-
+*/
     QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
 
     if(ports.count() > 0)
@@ -387,6 +388,7 @@ void SettingsDialog::EnumComm()
         settings->clearPorts();
     }
 //
+    /*
     if(wrapper.getPorts().count() > 0)
     {
         foreach(PORT port, wrapper.getPorts())
@@ -395,6 +397,7 @@ void SettingsDialog::EnumComm()
             qDebug() << port.description;
         }
     }
+    */
 //
     qDebug() << "List of ports:";
     bool flag = false;

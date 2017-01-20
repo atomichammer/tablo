@@ -1,4 +1,4 @@
-#include "DevicesViewFilter.h"
+#include "devicesviewfilter.h"
 #include <QDebug>
 #include <QColor>
 

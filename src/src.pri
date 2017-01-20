@@ -14,7 +14,6 @@ HEADERS += $$PWD/mylineedit.h \
     $$PWD/logcontainer.h \
     $$PWD/maskdelegate.h \
     $$PWD/settings/devicesviewfilter.h \
-    $$PWD/ftwrapper.h \
     $$PWD/logmodel.h \
     $$PWD/settingsstorage_sql.h \
     $$PWD/actionbutton.h
@@ -29,7 +28,6 @@ SOURCES += $$PWD/main.cpp \
     $$PWD/datasender.cpp \
     $$PWD/logcontainer.cpp \
     $$PWD/maskdelegate.cpp \
-    $$PWD/ftwrapper.cpp \
     $$PWD/logmodel.cpp \
     $$PWD/settingsstorage_sql.cpp \
     $$PWD/actionbutton.cpp

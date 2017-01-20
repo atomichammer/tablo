@@ -8,7 +8,12 @@
 #include "settings/devicemodel.h"
 #include <QDebug>
 #include "settings/currencynamesvalues.h"
-#include "ftwrapper.h"
+//#include "ftwrapper.h"
+
+typedef struct{
+    QString description;
+    QString name;
+} PORT;
 
 class SettingsStorage : public QObject
 {

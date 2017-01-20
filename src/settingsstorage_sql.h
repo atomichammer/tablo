@@ -9,7 +9,12 @@
 #include <QDebug>
 #include <QtSql>
 #include "currencynamesvalues.h"
-#include "ftwrapper.h"
+//#include "ftwrapper.h"
+
+typedef struct{
+    QString description;
+    QString name;
+} PORT;
 
 class SettingsStorage_sql : public QObject
 {

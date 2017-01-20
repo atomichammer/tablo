@@ -21,5 +21,6 @@
         <file>icons/logo.png</file>
         <file>icons/icon.png</file>
         <file>icons/night.png</file>
+        <file>DejaVuSans.ttf</file>
     </qresource>
 </RCC>

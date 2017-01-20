@@ -623,7 +623,9 @@ bool DataSender::open()
 
     this->close();
     SettingsStorage_sql *settings = SettingsStorage_sql::Instance();
-    port->setPortName("\\\\.\\" + settings->getPortName());
+    //port->setPortName("\\\\.\\" + settings->getPortName());
+    port->setPortName("/dev/" + settings->getPortName());
+    qDebug() << port->portName();
     if(port->open(QIODevice::ReadWrite/* | QIODevice::Unbuffered*/))
     {
         logModel->addEvent(2, tr("Port %1 opened.").arg(settings->getPortName()));
@@ -631,6 +633,7 @@ bool DataSender::open()
         return true;
     }
     QMessageBox::critical(0, tr("Error"), tr("Port open error: %1").arg(settings->getPortName()));
+    qDebug() << port->errorString();
     logModel->addEvent(1, tr("Port open error: %1").arg(settings->getPortName()));
     return false;
 }

@@ -11,10 +11,11 @@
 #include <QDataWidgetMapper>
 #include <QTimer>
 
-
+/*
 #include <windows.h>	//Definitions for various common and not so common types like DWORD, PCHAR, HANDLE, etc.
 #include <winuser.h>
 #include <dbt.h>	//Need this for definitions of WM_DEVICECHANGE messages
+*/
 
 namespace Ui {
     class MainForm;
@@ -48,8 +49,8 @@ private:
 
     void createGridLayout();
     void closeEvent(QCloseEvent *event);
-    bool winEvent(MSG *m, long *result);
-    void registerUSB();
+ //   bool winEvent(MSG *m, long *result);
+ //   void registerUSB();
 
 private slots:
     void on_actionLogWindow_triggered();

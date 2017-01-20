@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QLibrary>
 #include <QList>
-#include <windows.h>
+//#include <windows.h>
 
 extern "C"{
 #include "ftd2xx.h"

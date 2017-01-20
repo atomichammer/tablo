@@ -25,7 +25,7 @@ MainForm::MainForm(QWidget *parent) :
     connect(settings->getCurrencyNameValuesModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(autoResize()));
     LogModel *logModel = LogModel::Instance();
     logModel->addEvent(2, "Programm Started");
-    registerUSB();
+    //registerUSB();
 
     timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(sendData()));
@@ -115,7 +115,7 @@ void MainForm::sendData()
     result = sender->SphericalSenderInVacuum(3, param);
     if(result != 0)
     {
-        Sleep(500);
+        //Sleep(500);
         logWindow->close();
         delete logWindow;
     }
@@ -155,7 +155,7 @@ void MainForm::on_actionTurnOff_triggered()
     result = sender->SphericalSenderInVacuum(1, param);
     if(result != 0)
     {
-        Sleep(500);
+        //Sleep(500);
         logWindow->close();
         delete logWindow;
     }
@@ -171,7 +171,7 @@ void MainForm::on_actionDayMode_triggered()
     result = sender->SphericalSenderInVacuum(1, param);
     if(result != 0)
     {
-        Sleep(500);
+        //Sleep(500);
         logWindow->close();
         delete logWindow;
     }
@@ -187,7 +187,7 @@ void MainForm::on_actionSetNight_triggered()
     result = sender->SphericalSenderInVacuum(1, param);
     if(result != 0)
     {
-        Sleep(500);
+        //Sleep(500);
         logWindow->close();
         delete logWindow;
     }
@@ -198,7 +198,7 @@ void MainForm::on_actionLogWindow_triggered()
     Log *logWindow = new Log(this);
     logWindow->show();
 }
-
+/*
 void MainForm::registerUSB()
 {
     //Globally Unique Identifier (GUID). Windows uses GUIDs to identify things.
@@ -259,3 +259,4 @@ bool MainForm::winEvent(MSG *m, long *result)
      }
     return false;
 }
+*/
