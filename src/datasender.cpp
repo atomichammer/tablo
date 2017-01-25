@@ -301,6 +301,7 @@ QByteArray DataSender::getStatic( int num )
         }
 
         result.append(str);
+	//qDebug() << str;
 
         index = deviceConfig->index(i, 1, QModelIndex());
         length = deviceConfig->data(index, Qt::DisplayRole).toInt();
@@ -343,7 +344,7 @@ QByteArray DataSender::getStatic( int num )
 
     QByteArray bytes;
 
-    bytes = result.join('0').toLatin1();
+    bytes = result.join(QString()).toLatin1();
 
     for( int i=0; i<bytes.size(); )
     {
@@ -405,6 +406,7 @@ QByteArray DataSender::getDynamic( int num )
         }
 
         result.append(str);
+	//qDebug() << str;
 
         value = data.at(curID*2 + 1);
         str = value;
@@ -446,7 +448,7 @@ QByteArray DataSender::getDynamic( int num )
     */
     QByteArray bytes;
 
-    bytes = result.join('0').toLatin1();
+    bytes = result.join(QString()).toLatin1();
 
     for( int i=0; i<bytes.size(); )
     {
@@ -548,7 +550,7 @@ QByteArray DataSender::getDynamic_old( int num )
 
     QByteArray bytes;
 
-    bytes = result.join('0').toLatin1();
+    bytes = result.join(QString()).toLatin1();
 
     //convert to bcd with dot in higher nibble
     //one digit per byte (in lower nibble)
@@ -625,7 +627,7 @@ bool DataSender::open()
     SettingsStorage_sql *settings = SettingsStorage_sql::Instance();
     //port->setPortName("\\\\.\\" + settings->getPortName());
     port->setPortName("/dev/" + settings->getPortName());
-    qDebug() << port->portName();
+    //qDebug() << port->portName();
     if(port->open(QIODevice::ReadWrite/* | QIODevice::Unbuffered*/))
     {
         logModel->addEvent(2, tr("Port %1 opened.").arg(settings->getPortName()));
@@ -694,6 +696,6 @@ QByteArray DataSender::sendPacket(QByteArray packet, int requiredLength)
         socket->deleteLater();
     }
 */
-    qDebug() << dataReceived.toHex();
+    //qDebug() << dataReceived.toHex();
     return dataReceived;
 }
