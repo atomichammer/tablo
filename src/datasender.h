@@ -6,8 +6,8 @@
 #include <QByteArray>
 #include <QStringList>
 #include <QTcpSocket>
-
-#include "qextserialport.h"
+#include <QtSerialPort/QSerialPort>
+//#include "qextserialport.h"
 //#include "settingsstorage.h"
 #include "settingsstorage_sql.h"
 
@@ -44,7 +44,7 @@ public:
 
     QByteArray sendCommand8(unsigned char opcode, unsigned char address, QByteArray data, int requiredLength);
 private:
-    QextSerialPort *port;
+    QSerialPort *port;
     QStringList log;
     SettingsStorage_sql *settings;
     QTcpSocket *socket;

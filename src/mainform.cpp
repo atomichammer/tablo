@@ -109,7 +109,7 @@ void MainForm::sendData()
     logWindow->show();
 
     m_ui->pbSend->setEnabled(false);
-    QApplication::processEvents();
+    //QApplication::processEvents();
     QByteArray param;
     char result;
     result = sender->SphericalSenderInVacuum(3, param);
@@ -117,10 +117,11 @@ void MainForm::sendData()
     {
         Sleep(500);
         logWindow->close();
-        delete logWindow;
+        //delete logWindow;
     }
 
     m_ui->pbSend->setEnabled(true);
+    logWindow->deleteLater();
 }
 
 void MainForm::restoreSettings()

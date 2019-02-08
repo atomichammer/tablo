@@ -80,7 +80,7 @@ DialogDetails::DialogDetails(CurrencyNamesValues *currencyNames, DeviceModel *de
     connect(&timer, SIGNAL(timeout()), this, SLOT(updateBar()));
     timer.setInterval(1000);
     //get Threshold value
-    getThreshold();
+    //getThreshold();
 }
 
 DialogDetails::~DialogDetails()
@@ -298,4 +298,35 @@ void DialogDetails::on_pbSetBrighness_clicked()
     {
         QMessageBox::critical (this, this->windowTitle(), tr("No Answer!"));
     }
+}
+
+void DialogDetails::on_pbGetData_clicked()
+{
+    DataSender *sender = DataSender::Instance();
+    if(!sender->open())
+    {
+        return;
+    }
+
+    QByteArray bytes, result;
+    //bytes.append();
+    result = sender->sendCommand(0x0B, oldAddr, bytes, 1);
+    sender->close();
+}
+
+void DialogDetails::on_pbSendData_clicked()
+{
+    DataSender *sender = DataSender::Instance();
+    if(!sender->open())
+    {
+        return;
+    }
+
+    QByteArray bytes, result;
+    for(int i = 0; i < 51; i++)
+    {
+        bytes.append(i);
+    }
+    result = sender->sendCommand(0x03, oldAddr, bytes, 51);
+    sender->close();
 }

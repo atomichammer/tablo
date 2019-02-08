@@ -1,9 +1,9 @@
 #include "settingsstorage.h"
-#include "qextserialport.h"
 
 #include <QSettings>
 #include <QModelIndex>
 #include <QDir>
+#include <QtSerialPort/QtSerialPort>
 
 #include "settings/devicecontroller.h"
 
@@ -167,7 +167,7 @@ void SettingsStorage::loadCommunicationsSettings()
 
     iniSettings->beginGroup("StaticSettings");
             portName = iniSettings->value("port", "COM1").toString();
-            portSpeed = iniSettings->value("speed", BAUD9600).toInt();
+            portSpeed = iniSettings->value("speed", QSerialPort::Baud9600).toInt();
     iniSettings->endGroup();
 
     iniSettings->beginGroup("Tranmission");

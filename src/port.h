@@ -6,7 +6,9 @@
 #include <QThread>
 #include <QMutex>
 #include <QObject>
-#include "qextserialport.h"
+#include <QtSerialPort/QtSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
+//#include "qextserialport.h"
 
 class PortManager : public QObject
 {
@@ -24,7 +26,7 @@ public:
     bool isOpen() { return port->isOpen(); }
 
     //fields
-    QextSerialPort *port;
+    QSerialPort *port;
 signals:
     void timeoutOccured(const QByteArray &);
 };

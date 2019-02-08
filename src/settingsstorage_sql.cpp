@@ -1,12 +1,12 @@
 #include "settingsstorage_sql.h"
-#include "qextserialport.h"
+
 
 #include <QSettings>
 #include <QModelIndex>
 #include <QDir>
 #include <QMessageBox>
 #include <QTime>
-
+#include <QtSerialPort/QtSerialPort>
 #include "devicecontroller.h"
 
 SettingsStorage_sql *SettingsStorage_sql ::_self=NULL;
@@ -128,13 +128,14 @@ void SettingsStorage_sql::loadCommunicationsSettings()
 {
     QSqlQuery query;
 
-    query.prepare("SELECT port, maxtries FROM settings");
+    query.prepare("SELECT port, maxtries, timeout FROM settings");
     query.exec();
 
     if(query.next())
     {
         portName = query.value(0).toString();
         maxTries = query.value(1).toInt();
+        timeout = query.value(2).toInt();
     }
     query.finish();
 }
@@ -232,9 +233,10 @@ void SettingsStorage_sql::saveSettings()
     query.prepare("DELETE FROM settings");
     query.exec();
 
-    query.prepare("INSERT into settings (port, maxtries) VALUES (:port, :maxtries)");
+    query.prepare("INSERT into settings (port, maxtries, timeout) VALUES (:port, :maxtries, :timeout)");
     query.bindValue(":port", getPortName());
     query.bindValue(":maxtries", getMaxTries());
+    query.bindValue(":timeout", getTimeout());
     query.exec();
 
     query.prepare("DELETE FROM currencies");

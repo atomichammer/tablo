@@ -11,14 +11,14 @@ DataSender *DataSender ::_self=NULL;
 DataSender::DataSender()
 {
     settings = SettingsStorage_sql::Instance();
-    port = new QextSerialPort();
+    port = new QSerialPort();
     //port->setBaudRate(BaudRateType(speed));
-    port->setBaudRate(BaudRateType(BAUD9600));
-    port->setFlowControl(FLOW_OFF);
-    port->setParity(PAR_NONE);
-    port->setDataBits(DATA_8);
-    port->setStopBits(STOP_1);
-    port->setTimeout(10);
+//    port->setBaudRate(QSerialPort::Baud9600);
+//    port->setFlowControl(FLOW_OFF);
+//    port->setParity(PAR_NONE);
+//    port->setDataBits(DATA_8);
+//    port->setStopBits(STOP_1);
+//    port->setTimeout(10);
     //port->setRts(true); // this to set power for optocouplers (obsolete)
 }
 
@@ -53,7 +53,7 @@ char DataSender::SphericalSenderInVacuum(unsigned char cmd, QByteArray &bytes)
     DataSender *sender = DataSender::Instance();
     if(!sender->open())
     {
-//        return 0;
+        return 0;
     }
 
     char result = 1;
@@ -176,7 +176,7 @@ char DataSender::SphericalSenderInVacuum(unsigned char cmd, QByteArray &bytes)
                 }
             } break;
         }
-        //Sleep(100);
+        Sleep(800);
     }
     sender->close();
     return result;
@@ -254,7 +254,8 @@ QByteArray DataSender::getTimeDate()
 QByteArray DataSender::getStatic( int num )
 {
     SettingsStorage_sql *settings = SettingsStorage_sql::Instance();
-    QStringList data, result;
+    QStringList data;
+    QString result;
     QModelIndex index;
     int dataIndex = 0;
 
@@ -343,7 +344,8 @@ QByteArray DataSender::getStatic( int num )
 
     QByteArray bytes;
 
-    bytes = result.join('0').toLatin1();
+//   bytes = result.join('0').toLatin1();
+     bytes = result.toLatin1();
 
     for( int i=0; i<bytes.size(); )
     {
@@ -363,7 +365,8 @@ QByteArray DataSender::getStatic( int num )
 QByteArray DataSender::getDynamic( int num )
 {
     SettingsStorage_sql *settings = SettingsStorage_sql::Instance();
-    QStringList data, result;
+    QStringList data;
+    QString result;
     QModelIndex index;
 
     QStandardItemModel *deviceConfig = settings->getDevices()->getList().at(num).currConfig;
@@ -446,7 +449,7 @@ QByteArray DataSender::getDynamic( int num )
     */
     QByteArray bytes;
 
-    bytes = result.join('0').toLatin1();
+    bytes = result.toLatin1();
 
     for( int i=0; i<bytes.size(); )
     {
@@ -486,7 +489,8 @@ QByteArray DataSender::getDynamic( int num )
 QByteArray DataSender::getDynamic_old( int num )
 {
     SettingsStorage_sql *settings = SettingsStorage_sql::Instance();
-    QStringList data, result;
+    QStringList data;
+    QString result;
     QModelIndex index;
 
     QStandardItemModel *deviceConfig = settings->getDevices()->getList().at(num).currConfig;
@@ -548,7 +552,7 @@ QByteArray DataSender::getDynamic_old( int num )
 
     QByteArray bytes;
 
-    bytes = result.join('0').toLatin1();
+    bytes = result.toLatin1();
 
     //convert to bcd with dot in higher nibble
     //one digit per byte (in lower nibble)
@@ -648,28 +652,52 @@ void DataSender::close()
 QByteArray DataSender::sendPacket(QByteArray packet, int requiredLength)
 {
     Q_UNUSED(requiredLength)
-    port->flush();
-    port->write(packet);
-    while(port->bytesToWrite());
+
+    if(!port->isOpen())
+    {
+        qDebug() << "Port is closed!";
+        return 0;
+    }
 //
+    QTime timer(0,0,0,0);
+    //qDebug() << "Sent: " << packet.toHex();
+    qDebug() << "Written:" << port->write(packet);
+    qDebug() << "BytesToWrite: " << port->bytesToWrite();
+    port->flush();
+
     unsigned int numBytes = 0;
     QByteArray dataReceived;
-    QTime timer(0,0,0,0);
+
+
+    //qDebug() << "Timeout: " << settings->getTimeout();
     timer.restart();
-    while(dataReceived.length() < 8)
+
+    if(port->waitForReadyRead(settings->getTimeout()))
+    {
+        dataReceived.append(port->read(255));
+        while (port->waitForReadyRead(100))
+        {
+            dataReceived.append(port->read(255));
+        }
+    }
+    qDebug() << "Time: " << timer.elapsed();
+  /*
+    while(1)
     {
         numBytes = port->bytesAvailable();
         if (numBytes > 0)
         {
             if (numBytes > 255) numBytes = 255;
             dataReceived.append(port->read(numBytes));
-//            qDebug() << "Time: " << timer.elapsed();
+            qDebug() << "Time: " << timer.elapsed();
         }
-        if(timer.elapsed() > 800)
+        if(timer.elapsed() > settings->getTimeout())
         {
             break;
         }
     }
+    //qDebug() << "Time2: " << timer.elapsed();
+*/
 /*
     qDebug() << "R: " << dataReceived.toHex();
 
@@ -691,6 +719,6 @@ QByteArray DataSender::sendPacket(QByteArray packet, int requiredLength)
         socket->deleteLater();
     }
 */
-    qDebug() << dataReceived.toHex();
+    qDebug() << "Received: " << dataReceived.toHex();
     return dataReceived;
 }

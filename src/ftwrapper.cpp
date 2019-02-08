@@ -47,13 +47,13 @@ void FTWrapper::scanPorts()
                     QApplication::processEvents();
                     qDebug() << k++;
                 }
-                /*
+
                 if (ftStatus != FT_OK) //Get first device serial number
                 {
                         qDebug() << devIndex <<  " Couldn't get FTDI device description " << ftStatus;
                         continue;
                 }
-                */
+
 
                 FT_HANDLE ftHandle; // valid handle returned from FT_OpenEx
                 LONG lComPortNumber;

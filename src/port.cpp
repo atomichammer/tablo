@@ -5,14 +5,14 @@
 
 PortManager::PortManager()
 {
-    port = new QextSerialPort();
+    port = new QSerialPort();
     //port->setBaudRate(BaudRateType(speed));
-    port->setBaudRate(BaudRateType(BAUD9600));
-    port->setFlowControl(FLOW_OFF);
-    port->setParity(PAR_NONE);
-    port->setDataBits(DATA_8);
-    port->setStopBits(STOP_1);
-    port->setTimeout(10);
+//    port->setBaudRate(BaudRateType(BAUD9600));
+//    port->setFlowControl(FLOW_OFF);
+//    port->setParity(PAR_NONE);
+//    port->setDataBits(DATA_8);
+//    port->setStopBits(STOP_1);
+//    port->setTimeout(10);
     //port->setRts(true); // this to set power for optocouplers (obsolete)
 }
 

@@ -39,6 +39,10 @@ private slots:
 
     void on_pbSetBrighness_clicked();
 
+    void on_pbGetData_clicked();
+
+    void on_pbSendData_clicked();
+
 private:
     Ui::DialogDetails *ui;
     QStandardItemModel *currModel;

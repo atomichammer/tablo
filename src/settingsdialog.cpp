@@ -7,16 +7,16 @@
 #include <QVBoxLayout>
 
 #include "settingsdialog.h"
-#include "qextserialport.h"
 #include "settings/devicemodel.h"
 #include "settings/devicecontroller.h"
 #include "settings/dialogdetails.h"
 #include "settings/currencynamesdialog.h"
 #include "datasender.h"
 #include "port.h"
-#include "qextserialenumerator.h"
 #include "ftwrapper.h"
 #include "actionbutton.h"
+
+#define SCAN_LIMIT  255
 
 
 SettingsDialog::SettingsDialog(MainForm *parent)
@@ -36,6 +36,9 @@ SettingsDialog::SettingsDialog(MainForm *parent)
     connect(shortcut, SIGNAL(activated()), this, SLOT(toggleAdvancedMode()));
 
     ui.sbTries->setValue(settings->getMaxTries());
+    ui.sbTimeout->setValue(settings->getTimeout());
+    ui.lbScan->setText(tr("Address: %1/%2").arg(0).arg(SCAN_LIMIT));
+    ui.progressBar->setMaximum(SCAN_LIMIT);
 
 
     //setting view for the devices model
@@ -152,6 +155,15 @@ void SettingsDialog::sendAct()
     dataSender->close();
 }
 
+void SettingsDialog::closeEvent(QCloseEvent *event)
+{
+    if(scanning)
+    {
+        abortScan();
+    }
+    QDialog::closeEvent(event);
+}
+
 
 void SettingsDialog::toggleAdvancedMode()
 {
@@ -173,6 +185,7 @@ void SettingsDialog::portChange(int id)
     if(id >= 0)
     {
         settings->setPortName(settings->getPorts()->at(id).name);
+        qDebug() << "ID: " << id;
     }
 }
 
@@ -234,14 +247,14 @@ void SettingsDialog::startScan()
     ui.tvDevices->reset();
 
     ui.progressBar->setValue(0);
-    ui.lbScan->setText(tr("Address: %1/%2").arg(0).arg(31));
+    ui.lbScan->setText(tr("Address: %1/%2").arg(0).arg(SCAN_LIMIT));
 
     scanning = true;
 
     DeviceController *devControl = new DeviceController(settings->getDevices());
     QString name;
 
-    for(int i = 0; i < 255; i++)
+    for(int i = 0; i < SCAN_LIMIT; i++)
     {
         if(!scanning)
             break;
@@ -251,14 +264,14 @@ void SettingsDialog::startScan()
 
         //qDebug()<< i << ")" << bytes.toHex();
         ui.progressBar->setValue(i);
-        ui.lbScan->setText(tr("Address: %1/%2").arg(i).arg(31));
+        ui.lbScan->setText(tr("Address: %1/%2").arg(i).arg(SCAN_LIMIT));
         if(bytes.size() > 0 && bytes.contains(char(0xE0)))
         {
             start = bytes.indexOf(char(0xE0), 0);
             data = bytes.mid(start, bytes.at(start+1));
 
-            name = QString("Display_%1").arg(i);
-            QModelIndex index = devControl->addDevice(true, i, name, data.at(3), data.at(4), settings->getPortName());
+            name = QString("Display_%1").arg(QString::number(data.at(2)));
+            QModelIndex index = devControl->addDevice(true, data.at(2), name, data.at(3), data.at(4), settings->getPortName());
             if(data.length() > 6)
             {
                 devControl->setLength(&index, (int)data.at(5));
@@ -285,7 +298,7 @@ void SettingsDialog::abortScan()
     sender->close();
     ui.pbScan->setText(tr("Scan"));
     ui.progressBar->setValue(0);
-    ui.lbScan->setText(tr("Address: %1/%2").arg(0).arg(31));
+    ui.lbScan->setText(tr("Address: %1/%2").arg(0).arg(SCAN_LIMIT));
     scanning = false;
 }
 
@@ -373,13 +386,15 @@ void SettingsDialog::on_pbForce_clicked()
 
 void SettingsDialog::EnumComm()
 {
+    /*
     FTWrapper wrapper;
     if(wrapper.isSuccessful())
     {
         wrapper.scanPorts();
     }
+    */
 
-    QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
+    QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
 
     if(ports.count() > 0)
     {
@@ -387,6 +402,7 @@ void SettingsDialog::EnumComm()
         settings->clearPorts();
     }
 //
+    /*
     if(wrapper.getPorts().count() > 0)
     {
         foreach(PORT port, wrapper.getPorts())
@@ -395,16 +411,17 @@ void SettingsDialog::EnumComm()
             qDebug() << port.description;
         }
     }
+    */
 //
     qDebug() << "List of ports:";
     bool flag = false;
-    foreach (QextPortInfo info, ports)
+    foreach (QSerialPortInfo info, ports)
     {
-        if(info.portName != "")
+        if(info.portName() != "")
         {
             PORT port;
-            port.description = info.friendName;
-            port.name = info.portName;
+            port.description = info.description();
+            port.name = info.portName();
             flag = false;
             foreach(PORT baseport, *settings->getPorts())
             {
@@ -505,4 +522,9 @@ void SettingsDialog::on_pbReset_clicked()
         QMessageBox::information (this, this->windowTitle(), tr("Successful!"));
     }
     sender->close();
+}
+
+void SettingsDialog::on_sbTimeout_valueChanged(int arg1)
+{
+    settings->setTimeout(arg1);
 }

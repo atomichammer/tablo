@@ -78,6 +78,8 @@ private slots:
         void showContextMenu(QPoint point);
         void sendAct();
         void on_pbReset_clicked();
+        void on_sbTimeout_valueChanged(int arg1);
+        void closeEvent(QCloseEvent *event);
 };
 
 #endif
