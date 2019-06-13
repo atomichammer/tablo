@@ -105,6 +105,7 @@ void MainForm::callSettingsDialog()
 
 void MainForm::sendData()
 {
+
     Log *logWindow = new Log(this);
     logWindow->show();
 
@@ -112,6 +113,7 @@ void MainForm::sendData()
     //QApplication::processEvents();
     QByteArray param;
     char result;
+
     result = sender->SphericalSenderInVacuum(3, param);
     if(result != 0)
     {

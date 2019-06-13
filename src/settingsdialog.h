@@ -53,10 +53,12 @@ private:
         QAction *actNight;
         QAction *actOff;
         QAction *actRefresh;
+        QAction *actSetTime;
         bool scanning;
         void abortScan();
 
         void createActions();
+        QByteArray getTimeDate();
 public slots:
         void startScan();
         void checkStatus();
@@ -80,6 +82,7 @@ private slots:
         void on_pbReset_clicked();
         void on_sbTimeout_valueChanged(int arg1);
         void closeEvent(QCloseEvent *event);
+        void actSendTime();
 };
 
 #endif

@@ -51,6 +51,7 @@ char DataSender::SphericalSenderInVacuum(unsigned char cmd, QByteArray &bytes)
     }
 
     DataSender *sender = DataSender::Instance();
+
     if(!sender->open())
     {
         return 0;
@@ -628,8 +629,11 @@ bool DataSender::open()
     this->close();
     SettingsStorage_sql *settings = SettingsStorage_sql::Instance();
     port->setPortName("\\\\.\\" + settings->getPortName());
+    QTime timer(0,0,0,0);
+    timer.restart();
     if(port->open(QIODevice::ReadWrite/* | QIODevice::Unbuffered*/))
     {
+        qDebug() << "Elapsed time to start: " << timer.elapsed();
         logModel->addEvent(2, tr("Port %1 opened.").arg(settings->getPortName()));
         //qDebug() << "Port opened " << settings->getPortName();
         return true;
@@ -658,6 +662,7 @@ QByteArray DataSender::sendPacket(QByteArray packet, int requiredLength)
         qDebug() << "Port is closed!";
         return 0;
     }
+    qDebug() << packet.toHex();
 //
     QTime timer(0,0,0,0);
     //qDebug() << "Sent: " << packet.toHex();

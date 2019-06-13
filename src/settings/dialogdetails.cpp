@@ -282,15 +282,19 @@ void DialogDetails::on_pbSetBrighness_clicked()
     }
     //bytes.append(char(0x04)); //fcode
     unsigned short PWM = 1024 - qPow(2, ui->vsDayBright->value());
-    bytes.append( (PWM >> 2) & 0xFF );
-//    bytes.append( (PWM & 3) << 4 | 0x0C );
-    bytes.append( (PWM & 3) << 4 );
+    qDebug() << "PWM Day: " << PWM;
+    qDebug() << ((PWM >> 2) & 0xFF);
+    bytes.append((char)(PWM >> 2) & 0xFF );
+//    bytes.append( ((PWM & 3) << 4) | 0x0C );
+    bytes.append( ((PWM & 3) << 4) | 0x0C);
     PWM = 1024 - qPow(2, ui->vsNightBright->value());
+    qDebug() << "PWM Night: " << PWM;
     bytes.append( (PWM >> 2) & 0xFF );
-//    bytes.append( (PWM & 3) << 4 | 0x0D );
-    bytes.append( (PWM & 3) << 4 );
+//    bytes.append( ((PWM & 3) << 4) | 0x0D );
+    bytes.append( ((PWM & 3) << 4) | 0x0D);
     result = sender->sendCommand(0x04, oldAddr, bytes, 1);
     sender->close();
+    qDebug() <<"Brightness: " << bytes;
     if(result.contains(char(0xE0)))
     {
         QMessageBox::information (this, this->windowTitle(), tr("Successful!"));

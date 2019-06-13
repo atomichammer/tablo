@@ -69,21 +69,25 @@ void SettingsDialog::createActions()
     actNight = new QAction(QIcon(":/icons/night.png"), tr("Set Night"), this);
     actOff = new QAction(QIcon(":/icons/exit.png"), tr("Turn Off"), this);
     actRefresh = new QAction(QIcon(":/icons/refresh.png"), tr("Refresh\nstate"), this);
+    actSetTime = new QAction(QIcon(":/icons/refresh.png"), tr("Set Time"), this);
 
     actDay->setObjectName("Day");
     actNight->setObjectName("Night");
     actOff->setObjectName("Off");
     actRefresh->setObjectName("Refresh");
+    actSetTime->setObjectName("SetTime");
 
     actDay->setToolTip(tr("Set day mode for the selected device"));
     actNight->setToolTip(tr("Set night mode for the selected device"));
     actOff->setToolTip(tr("Turn off the selected device"));
     actRefresh->setToolTip(tr("Refresh state of all devices"));
+    actSetTime->setToolTip(tr("Set current time"));
 
     connect(actDay, SIGNAL(triggered()), this, SLOT(sendAct()));
     connect(actNight, SIGNAL(triggered()), this, SLOT(sendAct()));
     connect(actOff, SIGNAL(triggered()), this, SLOT(sendAct()));
     connect(actRefresh, SIGNAL(triggered()),this, SLOT(checkStatus()));
+    connect(actSetTime, SIGNAL(triggered()), this, SLOT(actSendTime()));
 
     QVBoxLayout *vLayout = new QVBoxLayout();
     ActionButton *pbDay = new ActionButton();
@@ -94,15 +98,53 @@ void SettingsDialog::createActions()
     pbOff->setAction(actOff);
     ActionButton *pbRefresh = new ActionButton();
     pbRefresh->setAction(actRefresh);
+    ActionButton *pbSetTime = new ActionButton();
+    pbSetTime->setAction(actSetTime);
 
     vLayout->addWidget(pbDay);
     vLayout->addWidget(pbNight);
     vLayout->addWidget(pbOff);
     vLayout->addWidget(pbRefresh);
+    vLayout->addWidget(pbSetTime);
     vLayout->addStretch();
     vLayout->setMargin(0);
 
     ui.widget_2->setLayout(vLayout);
+}
+
+void SettingsDialog::actSendTime()
+{
+    DataSender *dataSender = DataSender::Instance();
+    if(!dataSender->open())
+    {
+        return;
+    }
+    QByteArray param;
+
+    QModelIndex index = ui.tvDevices->currentIndex();
+
+    int row = index.row();
+
+    if(!index.isValid())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("No devices selected!"));
+        return;
+    }
+
+    unsigned int adr;
+    index = settings->getDevices()->index(row, 1, QModelIndex());
+    adr = settings->getDevices()->data(index, Qt::DisplayRole).toInt();
+
+    param = getTimeDate();
+
+    if(dataSender->sendCommand(0x0C, adr, param, 1).contains(0xE0))
+    {
+        QMessageBox::information (this, this->windowTitle(), tr("Successful!"));
+    } else
+    {
+        QMessageBox::critical (this, this->windowTitle(), tr("No Answer!"));
+    }
+    dataSender->close();
 }
 
 void SettingsDialog::showContextMenu(QPoint point)
@@ -527,4 +569,21 @@ void SettingsDialog::on_pbReset_clicked()
 void SettingsDialog::on_sbTimeout_valueChanged(int arg1)
 {
     settings->setTimeout(arg1);
+}
+
+QByteArray SettingsDialog::getTimeDate()
+{
+    QByteArray data;
+    QStringList list;
+    QDateTime *dateTime = new QDateTime();
+
+    QString date = dateTime->currentDateTime().toString("yy.MM.dd.hh.mm.ss");
+    list = date.split(".");
+
+    for (int i = 0; i<list.size(); i++)
+    {
+        data.append(list[i].toInt());
+    }
+
+    return data;
 }
